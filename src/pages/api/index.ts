@@ -13,6 +13,21 @@ import { runCorsMiddleware } from './raw'
 const basePath = pathPosix.resolve('/', siteConfig.baseDirectory)
 const clientSecret = revealObfuscatedToken(apiConfig.obfuscatedClientSecret)
 
+import Redis from 'ioredis';
+
+const redis = new Redis(process.env.REDIS_URL);  // Ensure REDIS_URL is defined in your environment variables
+
+export default async function handler(req, res) {
+  try {
+    // Test Redis connection
+    await redis.ping();
+    res.status(200).json({ message: 'Redis connected!' });
+  } catch (error) {
+    console.error('Redis connection failed', error);
+    res.status(500).json({ error: 'Redis connection failed' });
+  }
+}
+
 /**
  * Encode the path of the file relative to the base directory
  *
